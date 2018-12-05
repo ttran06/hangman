@@ -2,48 +2,6 @@ from graphics import *
 from time import sleep
 import random
 
-# TODO: Splash Window
-def printWelcomeScreen():
-    welcomeScreen = GraphWin("Welcome", 800, 400)
-    welcomeImage = Image(Point(350, 200), "welcome_image.PPM")
-    welcomeImage.draw(welcomeScreen)
-    sleep(3)    # Open window for 3 seconds
-    welcomeScreen.close()
-# TODO: Category symbol graphics
-
-# TODO: Connect category graphics to choice of words in the game
-
-
-# TODO: Create the guess Window
-def test():
-    WIDTH = 500
-    HEIGHT = 600
-
-    guessWin = GraphWin("Hangman", WIDTH, HEIGHT)
-
-    # Draw gallow
-    line1 = Line(Point(100, 50), Point(100, 150))   # Long vertical line
-    line2 = Line(Point(50, 50), Point(100,50))  # Top horizontal line
-    line3 = Line(Point(50,50), Point(50, 70))   # Short vertical line
-    line4 = Line(Point(75,150), Point(125, 150))    # Bottom horizontal line
-    line1.draw(guessWin)
-    line2.draw(guessWin)
-    line3.draw(guessWin)
-    line4.draw(guessWin)
-
-    # Select random word from food.txt
-    food_f = open('food.txt', 'r')
-    food = food_f.read().splitlines()
-    word = random.choice(food)
-#
-# main()
-# TODO: Create the components that are displayed on the window
-# Draw Hangman
-def drawMan(n_guess):
-    if n_guess == 1:
-        pass
-
-# TODO: Randomly select a word from correct file
 
 class Hangman:
 
@@ -65,36 +23,77 @@ class Hangman:
 
         # print the dashes
         print("Here's the word to guess: " + "_ " * len(self.word))
-        sleep(0.3)
 
-# TODO: User input window
-WIDTH = 500
-HEIGHT = 600
 
-guessWin = GraphWin("Hangman", WIDTH, HEIGHT)
-userGuess = Entry(Point(200, 200), 5)
-userGuess.draw(guessWin)
+class Button(Rectangle):
 
-# TODO: Swinging of man animation
+    def onClick(self):
+        print("Button was clicked!")
 
-# TODO: Determine if guessed letter is right or wrong
-# if userGuess in word:
-#     put in right space of dashes
-# else:
-#     put in trash
-# TODO: Put incorrect guess in TRASH
 
-# TODO: Put correct guess in dashes
+class guessWord(Button):
+    def onClick(self):
+        
 
-# TODO: Winner Splash screen
+# Create welcome splash screen
+def printWelcomeScreen():
+    welcomeScreen = GraphWin("Welcome", 800, 400)
+    welcomeImage = Image(Point(350, 200), "welcome_image.PPM")
+    welcomeImage.draw(welcomeScreen)
+    sleep(3)    # Open window for 3 seconds
+    welcomeScreen.close()
+
+
+# Create winner splash screen
 def winnerScreen():
     winnerScreen = GraphWin("Congratulations!", 600, 300)
     winnerImage = Image(Point(300,150), "winner.gif")
     winnerImage.draw(winnerScreen)
-    sleep(10)
+    sleep(2)
     winnerScreen.close()
-winnerScreen()
-# TODO: Loser Splash screen
+
+
+# Create loser splash screen
 def loserScreen():
     loserScreen = GraphWin("Sorry, You Lost.", 600, 300)
-# TODO: Continue screen
+    loserImage = Image(Point(300,150), "lost.PPM")
+    loserImage.draw(loserScreen)
+    sleep(2)
+    loserScreen.close()
+
+
+# Main game window
+def gameWin():
+        WIDTH = 500
+        HEIGHT = 600
+
+        guessWin = GraphWin("Hangman", WIDTH, HEIGHT)
+
+        # Draw gallow
+        line1 = Line(Point(100, 50), Point(100, 150))   # Long vertical line
+        line2 = Line(Point(50, 50), Point(100,50))  # Top horizontal line
+        line3 = Line(Point(50,50), Point(50, 70))   # Short vertical line
+        line4 = Line(Point(75,150), Point(125, 150))    # Bottom horizontal line
+        line1.draw(guessWin)
+        line2.draw(guessWin)
+        line3.draw(guessWin)
+        line4.draw(guessWin)
+
+        # Select from food
+        food = open('food.txt', 'r').readlines()
+        word = random.choice(food)
+
+        # Create user input box
+        user_guess_box = Entry(Point(200, 200), 5)
+        user_guess_box.draw(guessWin)
+
+
+def test():
+    # Print welcome splash screen
+    welcomeScreen()
+
+    # Category screen
+
+    # Game screen
+
+    # Win or lose screen
