@@ -19,18 +19,21 @@ class Hangman:
         self.found_position = []
         self.letter_list = []
         self.guessed_letters = []
+        self.trash_bin = []
         self.word_guess = False
 
     # Create dashes
     def word_process(self):
         """Create dashes from len(word)."""
         # break the word into letters to make a list
+        dashes = ""
         for i in range(len(self.word)):
             self.letter_list.append(self.word[i])
         for letter in self.word:
             if letter == " ":
-                print(" ", end=" ")  # put space if character is space
-            print("_", end=" ")
+                dashes = dashes + "  "
+            dashes = dashes + "_ "
+        return dashes
 
     def take_guess_by_letter(self, guess_letter):
         guess = guess_letter.upper()
@@ -67,6 +70,7 @@ class Hangman:
         if (letter_guess is True):
             print("\nYou guess on letter " + guess_letter + " is right!")
         else:
+            self.trash_bin.append(guess)
             print("\nSorry ;/ The letter " + guess_letter + "doesn't occur in this word...")
 
     def take_guess_by_word(self, guess_word):
@@ -79,6 +83,7 @@ class Hangman:
             print("Your guess is right! The answer is " + self.word + ".")
             self.word_guess = True
         else:
+            self.trash_bin.append(guess)
             print("Sorry ;/ Your guess is wrong...")
 
 
@@ -102,12 +107,33 @@ class enterButton(Button):
             Hangman.take_guess_by_letter()
 
 
+class yesButton(Button):
+    """Create a Yes button."""
+    def __init__(self, word):
+        self.Text = Text(Point(150, 150), Point(250, 250), "YES").setSize(16)
+
+    def onClick(self):
+        """Needs to conect to category window"""
+
+
+class noButton(Button):
+    def __init__(self, word):
+        self.Text = Text(Point(250, 150), Point(350, 250), "NO"), absetSize(16)
+
+    def onClick(self, gamewin):
+        self.goodbye_win = GraphWin("Goodbye Window", 600, 300)
+        self.message = Text(Point(500, 200), "GOODBYE!!")
+        sleep(2)
+        self.goodbye_win.close()
+        gamewin.close()
+
+
 def welcomeScreen():
-    """Create the welcome screen and display it for 3 seconds."""
+    """Create the welcome screen and display it for 2 seconds."""
     welcomeScreen = GraphWin("Welcome", 800, 400)
     welcomeImage = Image(Point(350, 200), "welcome_image.PPM")
     welcomeImage.draw(welcomeScreen)
-    sleep(3)    # Open window for 3 seconds
+    sleep(2)    # Open window for 2 seconds
     welcomeScreen.close()
 
 
@@ -209,7 +235,7 @@ def CategoryScreen():
     # finds where the mouse has been clicked
     # Food category
     if X_point_mouse_clicked <  X_cordinate2_food and Y_cordinate1_PopCulture < Y_point_mouse_clicked < Y_cordinate2_PopCulture:
-        file = open("food.txt". "r")
+        file = open("food.txt", "r")
         word_list = file.readlines()
         file.close()
         word_to_guess = random.choice(word_list)
@@ -219,10 +245,12 @@ def CategoryScreen():
         else:
             word = word_to_guess
 
+        win.close()
         return word
+
     # Animal category
     elif X_cordinate1_animal < X_point_mouse_clicked < X_cordinate2_animal and Y_cordinate1_PopCulture < Y_point_mouse_clicked < Y_cordinate2_PopCulture:
-        file = open("animal.txt". "r")
+        file = open("animal.txt", "r")
         word_list = file.readlines()
         file.close()
         word_to_guess = random.choice(word_list)
@@ -232,10 +260,12 @@ def CategoryScreen():
         else:
             word = word_to_guess
 
+        win.close()
         return word
+
     # Geography category
     elif X_cordinate1_country < X_point_mouse_clicked < X_cordinate2_country and Y_cordinate1_PopCulture < Y_point_mouse_clicked < Y_cordinate2_PopCulture:
-        file = open("geography.txt". "r")
+        file = open("geography.txt", "r")
         word_list = file.readlines()
         file.close()
         word_to_guess = random.choice(word_list)
@@ -245,10 +275,12 @@ def CategoryScreen():
         else:
             word = word_to_guess
 
+        win.close()
         return word
+
     # Pop culture
     elif X_cordinate1_PopCulture < X_point_mouse_clicked < X_cordinate2_PopCulture and Y_cordinate1_PopCulture < Y_point_mouse_clicked < Y_cordinate2_PopCulture:
-        file = open("popculture.txt". "r")
+        file = open("popculture.txt", "r")
         word_list = file.readlines()
         file.close()
         word_to_guess = random.choice(word_list)
@@ -258,7 +290,9 @@ def CategoryScreen():
         else:
             word = word_to_guess
 
+        win.close()
         return word
+
     # Random
     elif X_cordinate1_questionmark < X_point_mouse_clicked < X_cordinate2_questionmark and Y_cordinate1_PopCulture < Y_point_mouse_clicked < Y_cordinate2_PopCulture:
         categ_list = ['food.txt',
@@ -276,13 +310,15 @@ def CategoryScreen():
         else:
             word = word_to_guess
 
+        win.close()
         return word
+
     # The Y coordinate of the centers of the images is the same. I will use the
     # height of the popculture image as my boundary for the click point because
     # it has the greatest height "333" compared to the other images.
     elif Y_cordinate1_PopCulture > Y_point_mouse_clicked or Y_point_mouse_clicked > Y_cordinate2_PopCulture:
-        print("invalid input, try clicking on the image.")
-
+        message = Text(Point(900, 200), "Not a valid choice.")
+        message.draw(win)
 
 # Create winner splash screen
 def winnerScreen():
@@ -304,7 +340,7 @@ def loserScreen():
 
 
 # Main game window
-def gameWin(word):
+def gameWin(user_word):
     """Main game window."""
     guessWin = GraphWin("Hangman", WIDTH, HEIGHT)
 
@@ -320,26 +356,32 @@ def gameWin(word):
     line4.draw(guessWin)
 
     # Draw dashes
+    d = user_word.word_process()  # Create dashes
+    dash = Text(Point(240, 290), d)
+    dash.draw(guessWin)
+
+    # Draw enter Button
+    enterBtn = enterButton(Point(250, 390), Point(300, 410))
+    enter_message = Text(Point(270, 400), "Enter")
+    enterBtn.setFill("yellow")
+    enterBtn.setWidth(2)
+    enterBtn.draw(guessWin)
+    enter_message.draw(guessWin)
 
     # Create user input box
-    user_guess_box = Entry(Point(250, 400), 5)
+    user_guess_box = Entry(Point(200, 400), 5)
     user_guess_box.draw(guessWin)
-
-    game_won = False
 
     # While user has 8 or less incorrect guess or word has not been guessed
     while ((user_word.chance_count <= 8) or (user_word.word_guess is not True)):
         user_word.choose_guess()
-        # If word has not been guess
+         # If word has not been guess
         if (user_word.word_guess is False):
             continue
         else:
             winnerScreen()  # Congratulations you won screen
 
     loserScreen()
-
-
-gameWin()
 
 
 def main():
@@ -352,3 +394,5 @@ def main():
 
     # Game screen
     gameWin(user_word)
+
+main()
