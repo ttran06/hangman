@@ -31,14 +31,19 @@ class Hangman:
         """Create dashes from len(word)."""
         # break the word into letters to make a list
         for i in range(len(self.word)):
-#            if (self.word[i] == " "):
-#              continue
             self.letter_list.append(self.word[i])
+        # if " " put "  ", else put "_"
+        # for letter in self.word:
+        #     if letter == " ":
+        #         self.dashes = self.dashes + "  "
+        #     else:
+        #         self.dashes = self.dashes + "_ "
         for letter in self.word:
-            if letter == " ":
-                self.dashes = self.dashes + "  "
+            if letter != " ":
+                self.dashes = self.dashes + '_'
+                self.dashes = self.dashes + ' '
             else:
-                self.dashes = self.dashes + "_ "
+                self.dashes = self.dashes + ' '
 
         self.dashes = self.dashes[0:len(self.dashes)-1]
         self.d = Text(Point(240, 290), self.dashes)
@@ -56,9 +61,10 @@ class Hangman:
             if letter != " ":
                 letter_list_spaces.append(letter)
                 letter_list_spaces.append(" ")
+            else:
+                letter_list_spaces.append(letter)
         # Remove last element from list, remove " "
         del letter_list_spaces[-1]
-        print(letter_list_spaces)
 
         for i in range(len(letter_list_spaces)):
             if (guess == letter_list_spaces[i]):
@@ -70,17 +76,10 @@ class Hangman:
         #         self.found_position.append(i)
         #         letter_guess = True
 
-        # test if the whole word has been guessed
-        new_list = self.letter_list.copy()
-        if " " in new_list:
-            new_list.remove(" ")
-        answer = len(new_list)
-        if (len(self.found_position) == answer):
-            self.word_guess = True
-            winnerScreen()
 
         list_dashes = list(self.dashes)
-        print(self.word)
+        print(letter_list_spaces)
+
         # print out the dashes + guesses
         for i in range(len(letter_list_spaces)):
             if (i in self.found_position):
@@ -88,6 +87,15 @@ class Hangman:
                 dashes_guess = "".join(list_dashes)
                 self.d.setText(dashes_guess)
 
+        # test if the whole word has been guessed
+        new_list = self.letter_list.copy()
+        if " " in new_list:
+            new_list.remove(" ")
+        answer = len(new_list)
+        if (len(self.found_position) == answer):
+            self.word_guess = True
+            sleep(1)
+            winnerScreen()
 
         # print out comments on user's guesses
 
@@ -112,7 +120,11 @@ class Hangman:
         # test if the user's guessed word is the right word
 
         if (guess == self.word):
-            print("Your guess is right! The answer is " + self.word + ".")
+            s = "Your guess is right! The answer is " + self.word + "."
+            m = Text(Point(270, 470), s)
+            m.draw(self.win)
+            sleep(0.5)
+            # print("Your guess is right! The answer is " + self.word + ".")
             self.word_guess = True
         else:
             self.trash_bin.append(guess)
