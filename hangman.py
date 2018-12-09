@@ -23,6 +23,8 @@ class Hangman:
         self.trash_bin = []
         self.word_guess = False
         self.dashes = ""
+        self.d = Text(Point(240, 290), self.dashes)
+
 
     # Create dashes
     def word_process(self):
@@ -39,8 +41,8 @@ class Hangman:
                 self.dashes = self.dashes + "_ "
 
         self.dashes = self.dashes[0:len(self.dashes)-1]
-
-        return self.dashes
+        self.d = Text(Point(240, 290), self.dashes)
+        self.d.draw(self.win)
 
     def take_guess_by_letter(self, guess_letter):
         guess = guess_letter.upper()
@@ -56,6 +58,7 @@ class Hangman:
                 letter_list_spaces.append(" ")
         # Remove last element from list, remove " "
         del letter_list_spaces[-1]
+        print(letter_list_spaces)
 
         for i in range(len(letter_list_spaces)):
             if (guess == letter_list_spaces[i]):
@@ -69,23 +72,21 @@ class Hangman:
 
         # test if the whole word has been guessed
         new_list = self.letter_list.copy()
-        new_list.remove(" ")
+        if " " in new_list:
+            new_list.remove(" ")
         answer = len(new_list)
         if (len(self.found_position) == answer):
             self.word_guess = True
             winnerScreen()
 
-
         list_dashes = list(self.dashes)
-        dash_guess = Text(Point(240, 290), self.dashes)
-        dash_guess.draw(self.win)
-
+        print(self.word)
         # print out the dashes + guesses
         for i in range(len(letter_list_spaces)):
             if (i in self.found_position):
                 list_dashes[i] = letter_list_spaces[i]
                 dashes_guess = "".join(list_dashes)
-                dash_guess.setText(dashes_guess)
+                self.d.setText(dashes_guess)
 
 
         # print out comments on user's guesses
@@ -93,11 +94,15 @@ class Hangman:
         if (letter_guess is True):
             m = Text(Point(270, 480), "Your guess is correct!")
             m.draw(self.win)
+            sleep(0.5)
+            m.undraw()
             return letter_guess
         else:
             self.trash_bin.append(guess)
             m = Text(Point(270, 500), "Sorry. Your guess doesn't occur in this word")
             m.draw(self.win)
+            sleep(0.5)
+            m.undraw()
             return letter_guess
 
     def take_guess_by_word(self, guess_word):
@@ -382,10 +387,11 @@ def gameWin(guessWin, user_word):
     line3.draw(guessWin)
     line4.draw(guessWin)
 
-    # Draw dashes
-    d = user_word.word_process()  # Create dashes
-    dash = Text(Point(240, 290), d)
-    dash.draw(guessWin)
+    #Draw dashes
+    # d =
+    user_word.word_process()  # Create dashes
+    # dash = Text(Point(240, 290), d)
+    # dash.draw(guessWin)
 
     # Draw enter Button
     enterBtn = Rectangle(Point(250, 390), Point(300, 410))
@@ -411,8 +417,9 @@ def gameWin(guessWin, user_word):
                     guess = user_guess_box.getText()
                     if (len(guess) == 1):
                         answer = user_word.take_guess_by_letter(guess)
+                        # dash.undraw()
                         if answer is True:
-                            dash.undraw()
+                            continue
                         else:
                             # If user has 0 wrong guess, print the head
                             if user_word.chance_count == 0:
