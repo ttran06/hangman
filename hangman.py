@@ -12,33 +12,39 @@ HEIGHT = 600
 class Hangman:
     """Functions and characteristics of the hangman game."""
 
-    def __init__(self, word):
+    def __init__(self, word, win):
         """Initialize the attributes."""
         self.word = word
         self.chance_count = 0
+        self.win = win
         self.found_position = []
         self.letter_list = []
         self.guessed_letters = []
         self.trash_bin = []
         self.word_guess = False
-
+        self.dashes = ""
     # Create dashes
     def word_process(self):
         """Create dashes from len(word)."""
         # break the word into letters to make a list
-        dashes = ""
         for i in range(len(self.word)):
+##            if (self.word[i] == " "):
+##                continue
             self.letter_list.append(self.word[i])
         for letter in self.word:
             if letter == " ":
-                dashes = dashes + "  "
-            dashes = dashes + "_ "
+                self.dashes = self.dashes + "  "
+            self.dashes = self.dashes + "_ "
+
+        print(self.letter_list)
+        
         return dashes
 
     def take_guess_by_letter(self, guess_letter):
         guess = guess_letter.upper()
         self.guessed_letters.append(guess)
         letter_guess = False
+        # self.chance_count += 1
 
         # test if the user's guessed letter is in the word
 
@@ -48,30 +54,38 @@ class Hangman:
                 letter_guess = True
 
         # test if the whole word has been guessed
-
-        answer = len(self.letter_list)
+        new_list = self.letter_list.copy()
+        new_list.remove(" ")
+        answer = len(new_list)
         if (len(self.found_position) == answer):
             self.word_guess = True
+            winnerScreen()
 
         # print out the dashes + guesses
 
         for i in range(len(self.letter_list)):
             if (i in self.found_position):
                 if self.letter_list[i] == " ":
-                    print(" ", end=" ")
-                print(self.letter_list[i], end=" ")
+                    lett = Text(Point(100, 100), letter_list[i])
+                    lett.draw(self.win)
+                #print(self.letter_list[i], end=" ")
+            #elif (self.letter_list[i] == " "):
+                
+                #print(" ", end=" ")
             else:
-                if self.letter_list[i] == " ":
-                    print(" ", end=" ")
-                print('_', end=" ")
+                lett = Text(Point(100, 100), '_')
+                lett.draw(self.win)
+                #print('_', end=" ")
 
         # print out comments on user's guesses
 
         if (letter_guess is True):
             print("\nYou guess on letter " + guess_letter + " is right!")
+            return letter_guess
         else:
             self.trash_bin.append(guess)
-            print("\nSorry ;/ The letter " + guess_letter + "doesn't occur in this word...")
+            print("\nSorry ;/ The letter " + guess_letter + " doesn't occur in this word...")
+            return letter_guess
 
     def take_guess_by_word(self, guess_word):
         guess = guess_word.upper()
@@ -85,6 +99,7 @@ class Hangman:
         else:
             self.trash_bin.append(guess)
             print("Sorry ;/ Your guess is wrong...")
+            self.word_guess == False
 
 
 class Button(Rectangle):
@@ -98,13 +113,13 @@ class Button(Rectangle):
 class enterButton(Button):
     """Create a Enter button."""
 
-    def onClick(self):
-        """Check if the button was clicked."""
-        self.guess = user_guess_box.getText()
-        if len(guess) > 1:
-            Hangman.take_guess_by_word()
-        else:
-            Hangman.take_guess_by_letter()
+##    def onClick(self):
+##        """Check if the button was clicked."""
+##        self.guess = user_guess_box.getText()
+##        if len(guess) > 1:
+##            Hangman.take_guess_by_word()
+##        else:
+##            Hangman.take_guess_by_letter()
 
 
 class yesButton(Button):
@@ -241,7 +256,7 @@ def CategoryScreen():
         word_to_guess = random.choice(word_list)
 
         if ("\n" in word_to_guess):
-            word = word_to_guess
+            word = word_to_guess.strip("\n")
         else:
             word = word_to_guess
 
@@ -340,9 +355,8 @@ def loserScreen():
 
 
 # Main game window
-def gameWin(user_word):
+def gameWin(guessWin, user_word):
     """Main game window."""
-    guessWin = GraphWin("Hangman", WIDTH, HEIGHT)
 
     # Draw gallow
     line1 = Line(Point(120, 50), Point(120, 200))   # Long vertical line
@@ -361,7 +375,9 @@ def gameWin(user_word):
     dash.draw(guessWin)
 
     # Draw enter Button
-    enterBtn = enterButton(Point(250, 390), Point(300, 410))
+    enterBtn = Rectangle(Point(250, 390), Point(300, 410))
+    p1 = Point(250, 390)
+    p2 = Point(300, 410)
     enter_message = Text(Point(270, 400), "Enter")
     enterBtn.setFill("yellow")
     enterBtn.setWidth(2)
@@ -373,26 +389,89 @@ def gameWin(user_word):
     user_guess_box.draw(guessWin)
 
     # While user has 8 or less incorrect guess or word has not been guessed
-    while ((user_word.chance_count <= 8) or (user_word.word_guess is not True)):
-        user_word.choose_guess()
-         # If word has not been guess
-        if (user_word.word_guess is False):
-            continue
-        else:
+    while ((user_word.chance_count <= 8) and (user_word.word_guess is not True)):
+        mousePt = guessWin.getMouse()
+        if (enterBtn.getP1().getX() < mousePt.getX() < enterBtn.getP2().getX()):
+                # Check if their click was within the y range of the button
+                if (enterBtn.getP1().getY() < mousePt.getY() < enterBtn.getP2().getY()):
+                    #enterBtn.onClick()
+                    guess = user_guess_box.getText()
+                    if (len(guess) == 1):
+                        answer = user_word.take_guess_by_letter(guess)
+                        if answer is True:
+                            continue
+                        else:
+                            # If user has 0 wrong guess, print the head
+                            if user_word.chance_count == 0:
+                                user_word.chance_count += 1
+                                head = Circle(Point(45,95),15)
+                                head.draw(guessWin)
+                            # If user has 1 wrong guess, print the body
+                            elif user_word.chance_count == 1:
+                                user_word.chance_count += 1
+                                body = Line(Point(45, 110), Point(45, 150))
+                                body.draw(guessWin)
+                            # If user has 2 wrong guess, print the left leg
+                            elif user_word.chance_count == 2:
+                                user_word.chance_count += 1
+                                l_leg = Line(Point(45, 150), Point(25, 180))
+                                l_leg.draw(guessWin)
+                            # If user has 3 wrong guess, print the right leg.
+                            elif user_word.chance_count == 3:
+                                user_word.chance_count += 1
+                                r_leg = Line(Point(45, 150), Point(65, 180))
+                                r_leg.draw(guessWin)
+                            # If user has 4 wrong guess, print the left arm.
+                            elif user_word.chance_count == 4:
+                                user_word.chance_count += 1
+                                l_arm = Line(Point(45, 120), Point(25, 140))
+                                l_arm.draw(guessWin)
+                            # If user has 5 wrong guess, print the right arm.
+                            elif user_word.chance_count == 5:
+                                user_word.chance_count += 1
+                                r_arm = Line(Point(45, 120), Point(64, 140))
+                                r_arm.draw(guessWin)
+                            # If user has 6 wrong guess, print the left l_eye.
+                            elif user_word.chance_count == 6:
+                                user_word.chance_count += 1
+                                l_eye_x = Line(Point(38, 90), Point(42, 94))
+                                l_eye_x2 = Line(Point(42, 90), Point(38, 94))
+                                l_eye_x.draw(guessWin)
+                                l_eye_x2.draw(guessWin)
+                            # If user has 7 wrong guess, print the right eye.
+                            elif user_word.chance_count == 7:
+                                user_word.chance_count += 1
+                                r_eye_x = Line(Point(48, 90), Point(52, 94))
+                                r_eye_x2 = Line(Point(52,90), Point(48, 94))
+                                r_eye_x.draw(guessWin)
+                                r_eye_x2.draw(guessWin)
+                            # If the user has 8 wrong guess, print the mouth.
+                            elif user_word.chance_count == 8:
+                                user_word.chance_count += 1
+                                mouth = Line(Point(42, 100), Point(47, 100))
+                                mouth.draw(guessWin)
+                    else:
+                        user_word.take_guess_by_word(guess)
+
+        # If word has not been guess
+
+        if (user_word.word_guess == True):
             winnerScreen()  # Congratulations you won screen
 
     loserScreen()
 
 
 def main():
+    guessWin = GraphWin("Hangman", WIDTH, HEIGHT)
+
     # Print welcome splash screen
     welcomeScreen()
 
     # Category screen
     word = CategoryScreen()
-    user_word = Hangman(word)
+    user_word = Hangman(word, guessWin)
 
     # Game screen
-    gameWin(user_word)
+    gameWin(guessWin, user_word)
 
 main()
