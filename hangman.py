@@ -53,6 +53,10 @@ class Hangman:
         guess = guess_letter.upper()
         self.guessed_letters.append(guess)
         letter_guess = False
+<<<<<<< HEAD
+=======
+        # self.chance_count += 1
+>>>>>>> 6489223363d49c55891120eff1bf175d89d296a0
         letter_list_spaces = []
 
         # Put a space between every letter in the word
@@ -69,6 +73,22 @@ class Hangman:
             if (guess == letter_list_spaces[i]):
                 self.found_position.append(i)
                 letter_guess = True
+        # test if the user's guessed letter is in the word
+        # for i in range(len(self.letter_list)):
+        #     if (guess == self.letter_list[i]):
+        #         self.found_position.append(i)
+        #         letter_guess = True
+
+
+        list_dashes = list(self.dashes)
+        print(letter_list_spaces)
+
+        # print out the dashes + guesses
+        for i in range(len(letter_list_spaces)):
+            if (i in self.found_position):
+                list_dashes[i] = letter_list_spaces[i]
+                dashes_guess = "".join(list_dashes)
+                self.d.setText(dashes_guess)
 
         list_dashes = list(self.dashes)
         # print(letter_list_spaces)
@@ -87,6 +107,7 @@ class Hangman:
         answer = len(new_list)
         if (len(self.found_position) == answer):
             self.word_guess = True
+            sleep(1)
             winnerScreen()
 
         # print out comments on user's guesses
@@ -116,12 +137,31 @@ class Hangman:
             m = Text(Point(270, 470), s)
             m.draw(self.win)
             sleep(0.5)
+<<<<<<< HEAD
+=======
+            # print("Your guess is right! The answer is " + self.word + ".")
+>>>>>>> 6489223363d49c55891120eff1bf175d89d296a0
             self.word_guess = True
         else:
             self.trash_bin.append(guess)
             print("Sorry ;/ Your guess is wrong...")
             self.word_guess = False
+<<<<<<< HEAD
         
+=======
+
+
+class Button(Rectangle):
+    """Create a button."""
+
+    def onClick(self):
+        """Check if the button was clicked."""
+        print("Button was clicked!")
+
+
+class enterButton(Button):
+    """Create a Enter button."""
+>>>>>>> 6489223363d49c55891120eff1bf175d89d296a0
 
 ##class yesButton(Button):
 ##    """Create a Yes button."""
@@ -389,6 +429,10 @@ def gameWin(guessWin, user_word):
     line4.draw(guessWin)
 
     #Draw dashes
+<<<<<<< HEAD
+=======
+    # d =
+>>>>>>> 6489223363d49c55891120eff1bf175d89d296a0
     user_word.word_process()  # Create dashes
     # dash = Text(Point(240, 290), d)
     # dash.draw(guessWin)
