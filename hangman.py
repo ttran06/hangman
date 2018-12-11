@@ -32,12 +32,8 @@ class Hangman:
         # break the word into letters to make a list
         for i in range(len(self.word)):
             self.letter_list.append(self.word[i])
-        # if " " put "  ", else put "_"
-        # for letter in self.word:
-        #     if letter == " ":
-        #         self.dashes = self.dashes + "  "
-        #     else:
-        #         self.dashes = self.dashes + "_ "
+
+        # Create dashes
         for letter in self.word:
             if letter != " ":
                 self.dashes = self.dashes + '_'
@@ -45,10 +41,12 @@ class Hangman:
             else:
                 self.dashes = self.dashes + ' '
 
+        # Remove last ' '
         self.dashes = self.dashes[0:len(self.dashes)-1]
         self.d = Text(Point(240, 290), self.dashes)
         self.d.draw(self.win)
 
+    # If user guess by letter
     def take_guess_by_letter(self, guess_letter):
         guess = guess_letter.upper()
         self.guessed_letters.append(guess)
@@ -94,14 +92,14 @@ class Hangman:
         if (letter_guess is True):
             m = Text(Point(270, 480), "Your guess is correct!")
             m.draw(self.win)
-            sleep(0.5)
+            sleep(1)
             m.undraw()
             return letter_guess
         else:
             self.trash_bin.append(guess)
             m = Text(Point(270, 500), "Sorry. Your guess doesn't occur in this word")
             m.draw(self.win)
-            sleep(0.5)
+            sleep(1)
             m.undraw()
             return letter_guess
 
@@ -121,27 +119,24 @@ class Hangman:
             self.trash_bin.append(guess)
             print("Sorry ;/ Your guess is wrong...")
             self.word_guess = False
-        
 
-##class yesButton(Button):
-##    """Create a Yes button."""
-##    def __init__(self, word):
-##        self.Text = Text(Point(150, 150), Point(250, 250), "YES").setSize(16)
-##
-##    def onClick(self):
-##        """Needs to conect to category window"""
-##
-##
-##class noButton(Button):
-##    def __init__(self, word):
-##        self.Text = Text(Point(250, 150), Point(350, 250), "NO"), absetSize(16)
-##
-##    def onClick(self, gamewin):
-##        self.goodbye_win = GraphWin("Goodbye Window", 600, 300)
-##        self.message = Text(Point(500, 200), "GOODBYE!!")
-##        sleep(2)
-##        self.goodbye_win.close()
-##        gamewin.close()
+# print out the wrong guesses in the trash bin
+def trashBin(user_word, guessWin):
+
+    title = Text(Point(100, 230), "List of wrong guesses:")
+    wrong_guesses = Text(Point(270, 230), user_word.trash_bin)
+
+    if (len(user_word.trash_bin) < 8):
+        trashBox = Rectangle(Point(245, 220), Point(350, 240))
+    else:
+        n = len(user_word.trash_bin) - 4
+        trashBox = Rectangle(Point((245 - 10*n), 220), Point((295 + 10*n), 240))
+
+    trashBox.draw(guessWin)
+    trashBox.setFill(color_rgb(0, 255, 255))
+    trashBox.setWidth(2)
+    title.draw(guessWin)
+    wrong_guesses.draw(guessWin)
 
 
 def welcomeScreen():
@@ -272,7 +267,7 @@ def CategoryScreen():
         word_to_guess = random.choice(word_list)
 
         if ("\n" in word_to_guess):
-            word = word_to_guess
+            word = word_to_guess.strip("\n")
         else:
             word = word_to_guess
 
@@ -287,7 +282,7 @@ def CategoryScreen():
         word_to_guess = random.choice(word_list)
 
         if ("\n" in word_to_guess):
-            word = word_to_guess
+            word = word_to_guess.strip("\n")
         else:
             word = word_to_guess
 
@@ -302,7 +297,7 @@ def CategoryScreen():
         word_to_guess = random.choice(word_list)
 
         if ("\n" in word_to_guess):
-            word = word_to_guess
+            word = word_to_guess.strip("\n")
         else:
             word = word_to_guess
 
@@ -320,6 +315,8 @@ def CategoryScreen():
         file = open(categ, 'r')
         word_list = file.readlines()
         file.close()
+        word_to_guess = random.choice(word_list)
+
 
         if ("\n" in word_to_guess):
             word = word_to_guess.strip("\n")
@@ -346,6 +343,7 @@ def winnerScreen():
     winnerScreen.close()
 
 
+# Create lose splash screen
 def loserScreen():
     """Screen if user lose the game and displays for 2 seconds."""
     loserScreen = GraphWin("Sorry, You Lost.", 600, 300)
@@ -354,23 +352,50 @@ def loserScreen():
     sleep(2)
     loserScreen.close()
 
-# print out the wrong guesses in the trash bin
-def trashBin(user_word, window):
 
-    title = Text(Point(100, 230), "List of wrong guesses:")
-    wrong_guesses = Text(Point(270, 230), user_word.trash_bin)
-    
-    if (len(user_word.trash_bin) < 4):
-        trashBox = Rectangle(Point(245, 220), Point(295, 240))
-    else:
-        n = len(user_word.trash_bin) - 4
-        trashBox = Rectangle(Point((245 - 10*n), 220), Point((295 + 10*n), 240))
-        
-    trashBox.draw(window)
-    trashBox.setFill(color_rgb(0, 255, 255))
-    trashBox.setWidth(2)
-    title.draw(window)
-    wrong_guesses.draw(window)
+def continueScreen():
+    win = GraphWin("Continue screen", WIDTH, HEIGHT)
+    continue_message = Text(Point(240, 100), "Do you want to play again?")
+    continue_message.setSize(28)
+    yesBtn = Rectangle(Point(50, 150), Point(150, 250))
+    noBtn = Rectangle(Point(350, 150), Point(450, 250))
+    yes_message = Text(Point(100, 200), "YES")
+    no_message = Text(Point(400, 200), "NO")
+    yesBtn.setFill("green")
+    noBtn.setFill("red")
+    continue_message.draw(win)
+    yesBtn.draw(win)
+    noBtn.draw(win)
+    yes_message.draw(win)
+    no_message.draw(win)
+
+    mousePt = win.getMouse()
+
+    # If user click within yes button
+    # Check if user click within x range of yes button
+    if (yesBtn.getP1().getX() < mousePt.getX() < yesBtn.getP2().getX()):
+        # Check if user click within y range of yes button
+        if (yesBtn.getP1().getY() < mousePt.getY() < yesBtn.getP2().getY()):
+            game = True
+            win.close()
+            return game
+    # If user click within no button
+    # Check if user click within x range of no button
+    if (noBtn.getP1().getX() < mousePt.getX() < noBtn.getP2().getX()):
+        # Check if user click within y range of no button
+        if (noBtn.getP1().getY() < mousePt.getY() < noBtn.getP2().getY()):
+            game = False
+            win.close()
+            return game
+
+def goodbyeScreen():
+    win = GraphWin("Goodbye!", WIDTH, HEIGHT)
+
+    goodbye = Text(Point(250, 300), "GOODBYE!")
+    goodbye.setSize(28)
+    goodbye.draw(win)
+    sleep(2)
+    win.close()
 
 
 # Main game window
@@ -388,10 +413,8 @@ def gameWin(guessWin, user_word):
     line3.draw(guessWin)
     line4.draw(guessWin)
 
-    #Draw dashes
+
     user_word.word_process()  # Create dashes
-    # dash = Text(Point(240, 290), d)
-    # dash.draw(guessWin)
 
     # Draw enter Button
     enterBtn = Rectangle(Point(250, 390), Point(300, 410))
@@ -403,9 +426,11 @@ def gameWin(guessWin, user_word):
     enterBtn.draw(guessWin)
     enter_message.draw(guessWin)
 
+
     # Create user input box
     user_guess_box = Entry(Point(200, 400), 5)
     user_guess_box.draw(guessWin)
+
 
     # While user has 8 or less incorrect guess or word has not been guessed
     while ((user_word.chance_count <= 8) and (user_word.word_guess is not True)):
@@ -413,11 +438,10 @@ def gameWin(guessWin, user_word):
         if (enterBtn.getP1().getX() < mousePt.getX() < enterBtn.getP2().getX()):
                 # Check if their click was within the y range of the button
                 if (enterBtn.getP1().getY() < mousePt.getY() < enterBtn.getP2().getY()):
-                    #enterBtn.onClick()
                     guess = user_guess_box.getText()
+                    user_guess_box.setText("")
                     if (len(guess) == 1):
                         answer = user_word.take_guess_by_letter(guess)
-                        # dash.undraw()
                         if answer is True:
                             continue
                         else:
@@ -426,31 +450,37 @@ def gameWin(guessWin, user_word):
                                 user_word.chance_count += 1
                                 head = Circle(Point(45,95),15)
                                 head.draw(guessWin)
+                                trashBin(user_word, guessWin)
                             # If user has 1 wrong guess, print the body
                             elif user_word.chance_count == 1:
                                 user_word.chance_count += 1
                                 body = Line(Point(45, 110), Point(45, 150))
                                 body.draw(guessWin)
+                                trashBin(user_word, guessWin)
                             # If user has 2 wrong guess, print the left leg
                             elif user_word.chance_count == 2:
                                 user_word.chance_count += 1
                                 l_leg = Line(Point(45, 150), Point(25, 180))
                                 l_leg.draw(guessWin)
+                                trashBin(user_word, guessWin)
                             # If user has 3 wrong guess, print the right leg.
                             elif user_word.chance_count == 3:
                                 user_word.chance_count += 1
                                 r_leg = Line(Point(45, 150), Point(65, 180))
                                 r_leg.draw(guessWin)
+                                trashBin(user_word, guessWin)
                             # If user has 4 wrong guess, print the left arm.
                             elif user_word.chance_count == 4:
                                 user_word.chance_count += 1
                                 l_arm = Line(Point(45, 120), Point(25, 140))
                                 l_arm.draw(guessWin)
+                                trashBin(user_word, guessWin)
                             # If user has 5 wrong guess, print the right arm.
                             elif user_word.chance_count == 5:
                                 user_word.chance_count += 1
                                 r_arm = Line(Point(45, 120), Point(64, 140))
                                 r_arm.draw(guessWin)
+                                trashBin(user_word, guessWin)
                             # If user has 6 wrong guess, print the left l_eye.
                             elif user_word.chance_count == 6:
                                 user_word.chance_count += 1
@@ -458,6 +488,7 @@ def gameWin(guessWin, user_word):
                                 l_eye_x2 = Line(Point(42, 90), Point(38, 94))
                                 l_eye_x.draw(guessWin)
                                 l_eye_x2.draw(guessWin)
+                                trashBin(user_word, guessWin)
                             # If user has 7 wrong guess, print the right eye.
                             elif user_word.chance_count == 7:
                                 user_word.chance_count += 1
@@ -465,39 +496,46 @@ def gameWin(guessWin, user_word):
                                 r_eye_x2 = Line(Point(52,90), Point(48, 94))
                                 r_eye_x.draw(guessWin)
                                 r_eye_x2.draw(guessWin)
+                                trashBin(user_word, guessWin)
                             # If the user has 8 wrong guess, print the mouth.
                             elif user_word.chance_count == 8:
                                 user_word.chance_count += 1
                                 mouth = Line(Point(42, 100), Point(47, 100))
                                 mouth.draw(guessWin)
-                                
-                            # Draw Trash Box
-                            trashBin(user_word, guessWin)
+                                loserScreen()
+                                trashBin(user_word, guessWin)
+                                guessWin.close()
 
                     else:
-                        user_word.take_guess_by_word(guess)
-                        # Draw Trash Box
-                        trashBin(user_word, guessWin)
+                        answer = user_word.take_guess_by_word(guess)
 
         # If word has not been guess
 
         if (user_word.word_guess == True):
             winnerScreen()  # Congratulations you won screen
 
-    loserScreen()
-
 
 def main():
-    guessWin = GraphWin("Hangman", WIDTH, HEIGHT)
-
     # Print welcome splash screen
     welcomeScreen()
 
-    # Category screen
-    word = CategoryScreen()
-    user_word = Hangman(word, guessWin)
 
-    # Game screen
-    gameWin(guessWin, user_word)
+    while True:
+        guessWin = GraphWin("Hangman", WIDTH, HEIGHT)
+        # Category screen
+        word = CategoryScreen()
+        user_word = Hangman(word, guessWin)
+
+        # Game screen
+        gameWin(guessWin, user_word)
+
+        # Calling the continue screen
+        game = continueScreen()
+        if game is True:
+            continue
+        else:
+            break
+
+    goodbyeScreen()
 
 main()
