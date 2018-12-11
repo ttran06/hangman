@@ -115,10 +115,12 @@ class Hangman:
             m.draw(self.win)
             sleep(0.5)
             self.word_guess = True
+            return word_guess
         else:
             self.trash_bin.append(guess)
             print("Sorry ;/ Your guess is wrong...")
             self.word_guess = False
+            return self.word_guess
 
 # print out the wrong guesses in the trash bin
 def trashBin(user_word, guessWin):
@@ -508,12 +510,65 @@ def gameWin(guessWin, user_word):
 
                     else:
                         answer = user_word.take_guess_by_word(guess)
+                        if answer is False:
+                            # If user has 0 wrong guess, print the head
+                            if user_word.chance_count == 0:
+                                user_word.chance_count += 1
+                                head = Circle(Point(45,95),15)
+                                head.draw(guessWin)
+                            # If user has 1 wrong guess, print the body
+                            elif user_word.chance_count == 1:
+                                user_word.chance_count += 1
+                                body = Line(Point(45, 110), Point(45, 150))
+                                body.draw(guessWin)
+                            # If user has 2 wrong guess, print the left leg
+                            elif user_word.chance_count == 2:
+                                user_word.chance_count += 1
+                                l_leg = Line(Point(45, 150), Point(25, 180))
+                                l_leg.draw(guessWin)
+                            # If user has 3 wrong guess, print the right leg.
+                            elif user_word.chance_count == 3:
+                                user_word.chance_count += 1
+                                r_leg = Line(Point(45, 150), Point(65, 180))
+                                r_leg.draw(guessWin)
+                            # If user has 4 wrong guess, print the left arm.
+                            elif user_word.chance_count == 4:
+                                user_word.chance_count += 1
+                                l_arm = Line(Point(45, 120), Point(25, 140))
+                                l_arm.draw(guessWin)
+                            # If user has 5 wrong guess, print the right arm.
+                            elif user_word.chance_count == 5:
+                                user_word.chance_count += 1
+                                r_arm = Line(Point(45, 120), Point(64, 140))
+                                r_arm.draw(guessWin)
+                            # If user has 6 wrong guess, print the left l_eye.
+                            elif user_word.chance_count == 6:
+                                user_word.chance_count += 1
+                                l_eye_x = Line(Point(38, 90), Point(42, 94))
+                                l_eye_x2 = Line(Point(42, 90), Point(38, 94))
+                                l_eye_x.draw(guessWin)
+                                l_eye_x2.draw(guessWin)
+                            # If user has 7 wrong guess, print the right eye.
+                            elif user_word.chance_count == 7:
+                                user_word.chance_count += 1
+                                r_eye_x = Line(Point(48, 90), Point(52, 94))
+                                r_eye_x2 = Line(Point(52,90), Point(48, 94))
+                                r_eye_x.draw(guessWin)
+                                r_eye_x2.draw(guessWin)
+                            # If the user has 8 wrong guess, print the mouth.
+                            elif user_word.chance_count == 8:
+                                user_word.chance_count += 1
+                                mouth = Line(Point(42, 100), Point(47, 100))
+                                mouth.draw(guessWin)
+                                loserScreen()
+                                guessWin.close()
 
-        # If word has not been guess
+        # If word was guessed
 
-        if (user_word.word_guess == True):
+        if (user_word.word_guess is True):
             winnerScreen()  # Congratulations you won screen
-
+            guessWin.close()
+    guessWin.close()
 
 def main():
     # Print welcome splash screen
